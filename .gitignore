@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# generated outputs
+maze_demo.gif
+maze_demo.png
+astar_vs_dijkstra.png
+*.jsonl
+
+# local agent (team-specific; the template is committed)
+laya_agent.py
+
+.claude/settings.local.json

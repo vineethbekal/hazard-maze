@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hazard Maze</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 3h18v4h-4v4h4v10H3v-4h8v-4H7v4H3z" fill="currentColor"/></svg>
+      </div>
+      <div>
+        <h1>Hazard Maze</h1>
+        <p class="tag">The shortest route is not the fastest one.</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <label class="field">
+        <span>Seed</span>
+        <div class="seedbox">
+          <input id="seed" type="number" value="7" min="0">
+          <button id="dice" class="icon" title="Random maze (N)" aria-label="Random maze">
+            <svg viewBox="0 0 24 24" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.6" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.6" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.6" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.6" fill="currentColor"/></svg>
+          </button>
+        </div>
+      </label>
+      <label class="field">
+        <span>Map</span>
+        <select id="size">
+          <option value="31">31 × 31</option>
+          <option value="51" selected>51 × 51</option>
+          <option value="71">71 × 71</option>
+          <option value="91">91 × 91</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Vision</span>
+        <select id="radius">
+          <option value="1">3 × 3</option>
+          <option value="2" selected>5 × 5</option>
+          <option value="3">7 × 7</option>
+        </select>
+      </label>
+      <label class="field speed">
+        <span>Speed <b id="speedVal">10×</b></span>
+        <input id="speed" type="range" min="1" max="60" value="10">
+      </label>
+      <div class="buttons">
+        <button id="play" class="primary" title="Play / pause (Space)">Pause</button>
+        <button id="restart" title="Restart (R)">Restart</button>
+        <button id="go" title="Load this seed">Load</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hud">
+    <div class="clock"><span class="label">Race clock</span><span id="clock">0.0 s</span></div>
+    <div id="mapinfo" class="mapinfo">Loading…</div>
+  </section>
+
+  <main id="panels" class="panels"></main>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Results for this maze</h2>
+      <span class="hint">Time ÷ best possible time · lower is better</span>
+    </div>
+    <div id="results" class="results"></div>
+  </section>
+
+  <section class="grid2">
+    <div class="card">
+      <h2>Tiles</h2>
+      <ul class="legend">
+        <li><i class="sw floor"></i><b>Floor</b> 1 s per move</li>
+        <li><i class="sw wall"></i><b>Wall</b> blocked</li>
+        <li><i class="sw puddle"></i><b>Puddle</b> slip: one-off +1 to +3 s (darker = worse)</li>
+        <li><i class="sw mud"></i><b>Mud</b> slowed: the next <span class="slowMoves">3</span> moves take 2× as long</li>
+        <li><i class="sw arrow"></i><b>Conveyor</b> pushes you one tile back (+1 s)</li>
+        <li><i class="sw start"></i><b>Start</b> &nbsp; <i class="sw goal"></i><b>Goal</b></li>
+        <li><i class="sw fog"></i><b>Fog</b> tiles a limited agent hasn't seen yet</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Who's racing</h2>
+      <ul class="who">
+        <li><i class="dot" style="--c:var(--oracle)"></i><b>Oracle</b> sees the whole map and plans on time with Dijkstra. The best possible run: the ground truth.</li>
+        <li><i class="dot" style="--c:var(--astar)"></i><b>A*</b> sees a small window plus GPS (walls only). Plans the fewest steps and ignores hazard costs.</li>
+        <li><i class="dot" style="--c:var(--aware)"></i><b>Obstacle-aware A*</b> has the same view, but plans on time using every hazard it has seen, and expects some hazards in unseen tiles.</li>
+        <li><i class="dot" style="--c:var(--laya)"></i><b>Laya</b> has the same view as the A* agents. It picks each move as a classification. It shows up when <code>laya_agent.py</code> exists.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2>Benchmark</h2>
+      <div class="bench-ctl">
+        <select id="benchN">
+          <option value="5">5 mazes</option>
+          <option value="10" selected>10 mazes</option>
+          <option value="20">20 mazes</option>
+        </select>
+        <button id="bench">Run benchmark</button>
+      </div>
+    </div>
+    <p class="hint">Average over several mazes with the current map size and vision, starting from the current seed.</p>
+    <div id="benchOut" class="results"></div>
+  </section>
+
+  <footer class="foot">Space play/pause · R restart · N new random maze</footer>
+  <script src="app.js"></script>
+</body>
+</html>
